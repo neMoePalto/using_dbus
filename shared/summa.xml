@@ -1,0 +1,20 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+        "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+        <interface name="org.rumba.Sum">
+                <method name="methodVoid">
+                <arg name = "value01" type="i" direction="in"/>
+                <arg name = "value02" type="i" direction="in"/>
+                </method>
+                <method name="methodWithReturnValue">
+                <!--arg ДЛЯ СОБСТВЕННЫХ ТИПОВ type=<НЕ ИМЕЕТ ЗНАЧЕНИЯ> -->
+                <arg name = "value01" type="(ddiuuuud)" direction="in"/>
+                <annotation name="org.qtproject.QtDBus.QtTypeName.In0" value="MyData"/>
+                <arg name = "value02" type="i" direction="in"/>
+                <arg name = "ret" type="d" direction="out"/>
+                </method>
+                <signal name="signalFirst">
+                <arg name = "flag" type="b" direction="out"/>
+                </signal>
+        </interface>
+</node>

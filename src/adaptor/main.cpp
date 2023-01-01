@@ -1,6 +1,8 @@
-#include "widgetwithadaptor.h"
-#include "../shared/mydata.h"
 #include <QApplication>
+
+#include "widget_with_adaptor.h"
+#include "../shared/my_data.h"
+
 
 int main(int argc, char *argv[])
 {

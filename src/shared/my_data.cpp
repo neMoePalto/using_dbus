@@ -1,4 +1,5 @@
-#include "mydata.h"
+#include "my_data.h"
+
 
 MyData::MyData(double a1, double a2, int a3)
 {
@@ -41,4 +42,3 @@ void MyData::registerMetaType()
     qRegisterMetaType<MyData>("MyData");
     qDBusRegisterMetaType<MyData>();
 }
-

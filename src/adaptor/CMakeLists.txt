@@ -2,17 +2,17 @@ project(adaptor_for_dbus VERSION 0.1 LANGUAGES CXX)
 
 set(sources
   main.cpp
-  widgetwithadaptor.cpp
-  widgetwithadaptor.h
-  ../shared/mydata.cpp
-  ../shared/mydata.h
+  widget_with_adaptor.cpp
+  widget_with_adaptor.h
+  ../shared/my_data.cpp
+  ../shared/my_data.h
 )
 
 #set(dbus_adaptor_src)
 
 qt_add_dbus_adaptor(dbus_adaptor_src
   ../shared/summa.xml
-  ../shared/mydata.h
+  ../shared/my_data.h
   ""
   summa_adaptor
 )

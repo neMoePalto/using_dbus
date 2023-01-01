@@ -1,6 +1,7 @@
-#ifndef MYDATA_H
-#define MYDATA_H
+#pragma once
+
 #include <QtDBus>
+
 
 struct MyData
 {
@@ -21,5 +22,3 @@ private:
 
 // "Знакомим" систему метатипов Qt с нашим типом данных:
 Q_DECLARE_METATYPE(MyData)
-
-#endif // MYDATA_H

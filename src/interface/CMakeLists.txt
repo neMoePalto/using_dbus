@@ -2,10 +2,10 @@ project(interface_for_dbus VERSION 0.1 LANGUAGES CXX)
 
 set(sources
   main.cpp
-  widgetwithinterface.cpp
-  widgetwithinterface.h
-  ../shared/mydata.cpp
-  ../shared/mydata.h
+  widget_with_interface.cpp
+  widget_with_interface.h
+  ../shared/my_data.cpp
+  ../shared/my_data.h
 )
 
 set(xml
@@ -13,7 +13,7 @@ set(xml
 )
 
 set_source_files_properties(${xml} PROPERTIES
-  INCLUDE ../shared/mydata.h
+  INCLUDE ../shared/my_data.h
 )
 
 #set(dbus_interface_src)

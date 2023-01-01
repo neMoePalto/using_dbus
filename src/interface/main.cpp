@@ -1,6 +1,8 @@
-#include "widgetwithinterface.h"
-#include "../shared/mydata.h"
 #include <QApplication>
+
+#include "widget_with_interface.h"
+#include "../shared/my_data.h"
+
 
 int main(int argc, char *argv[])
 {

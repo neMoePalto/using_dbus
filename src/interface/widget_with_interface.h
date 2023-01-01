@@ -1,8 +1,11 @@
-#ifndef WIDGETWITHINTERFACE_H
-#define WIDGETWITHINTERFACE_H
+#pragma once
+
 #include <QWidget>
+
 #include <memory>
+
 #include "summa_interface.h"
+
 
 class QLabel;
 class QLineEdit;
@@ -51,5 +54,3 @@ private:
     QSettings* _settings;
     void usePreviousSettings(QLineEdit* leForIp, QLineEdit* leForPort);
 };
-
-#endif // WIDGETWITHINTERFACE_H

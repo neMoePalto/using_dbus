@@ -20,6 +20,6 @@ find_package(Qt6 REQUIRED COMPONENTS
   Widgets
 )
 
-add_subdirectory(adaptorApp)
+add_subdirectory(src/adaptor)
 
-add_subdirectory(interfaceApp)
+add_subdirectory(src/interface)

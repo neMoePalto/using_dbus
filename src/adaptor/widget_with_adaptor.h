@@ -1,9 +1,12 @@
-#ifndef WIDGETWITHADAPTOR_H
-#define WIDGETWITHADAPTOR_H
-#include <QWidget>
+#pragma once
+
 #include <QDBusConnection>
 #include <QSettings>
-#include "../shared/mydata.h"
+#include <QWidget>
+
+#include "../shared/my_data.h"
+
+
 // Класс-клиент, использующий адаптор Dbus (Адаптор)
 class QLabel;
 class QLineEdit;
@@ -56,5 +59,3 @@ private:
     QSettings* _settings;
     void usePreviousSettings(QLineEdit* leForIp, QLineEdit* leForPort);
 };
-
-#endif // WIDGETWITHADAPTOR_H

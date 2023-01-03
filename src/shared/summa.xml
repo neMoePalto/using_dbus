@@ -2,18 +2,18 @@
         "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node>
     <interface name="org.rumba.Sum">
-        <method name="methodVoid">
+        <method name="get_sum_method">
             <arg name = "value01" type="i" direction="in"/>
             <arg name = "value02" type="i" direction="in"/>
+            <arg name = "ret"     type="i" direction="out"/>
         </method>
-        <method name="methodWithReturnValue">
+        <method name="void_method">
             <!--arg ДЛЯ СОБСТВЕННЫХ ТИПОВ type=<НЕ ИМЕЕТ ЗНАЧЕНИЯ> -->
             <arg name = "value01" type="(abcd)" direction="in"/>
             <annotation name="org.qtproject.QtDBus.QtTypeName.In0" value="MyData"/>
-            <arg name = "value02" type="i" direction="in"/>
-            <arg name = "ret" type="d" direction="out"/>
+            <arg name = "value02" type="d" direction="in"/>
         </method>
-        <signal name="signalFirst">
+        <signal name="bool_data_signal">
             <arg name = "flag" type="b" direction="out"/>
         </signal>
     </interface>

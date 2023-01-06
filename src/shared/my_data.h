@@ -7,7 +7,7 @@
 
 struct my_data {
   my_data() = default;
-  my_data(double a, double b, int c);
+  my_data(double a, double b, double c);
   double do_something();
   // Реализуем необходимые операторы (2 шт):
   friend QDBusArgument& operator<<(QDBusArgument& bus, const my_data& d);
@@ -16,7 +16,7 @@ struct my_data {
 private:
   double a_;
   double b_;
-  int    c_;
+  double c_;
 };
 
 // "Знакомим" систему метатипов Qt с нашим типом данных:

@@ -1,7 +1,7 @@
 #include "my_data.h"
 
 
-my_data::my_data(double a, double b, int c)
+my_data::my_data(double a, double b, double c)
   : a_(a)
   , b_(b)
   , c_(c) {

@@ -1,9 +1,12 @@
 #include "widget_with_interface.h"
 
+#include <vector>
+
 #include <QDBusConnection>
 #include <QDBusPendingReply>
 #include <QDebug>
 #include <QGridLayout>
+#include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
@@ -46,9 +49,40 @@ widget_with_interface::widget_with_interface(QWidget *parent)
   auto* output_label = new QLabel(tr("Логи подключения + данные, полученные от adaptor"));
   output_label->setFixedHeight(35);
 
-  auto* send_by_method_pb = new QPushButton(tr("Отправить данные,\nиспользуя метод <method>"));
-  send_by_method_pb->setFixedHeight(80);
-  send_by_method_pb->setPalette(green_color);
+  auto* sum_remote_call_pb = new QPushButton(tr("Запросить расчет \nсуммы чисел на адапторе,"
+                                                "\n(remote call метода с return value)"));
+  sum_remote_call_pb->setFixedHeight(80);
+  sum_remote_call_pb->setPalette(green_color);
+  auto* first_sum_le = new QLineEdit();
+  first_sum_le->setFixedSize(60, 40);
+  auto* second_sum_le = new QLineEdit();
+  second_sum_le->setFixedSize(60, 40);
+  auto* plus_symbol_label = new QLabel("+");
+
+  auto* sum_lyt = new QHBoxLayout();
+  sum_lyt->addStretch();
+  sum_lyt->addWidget(first_sum_le);
+  sum_lyt->addWidget(plus_symbol_label);
+  sum_lyt->addWidget(second_sum_le);
+  sum_lyt->addWidget(sum_remote_call_pb);
+
+  auto* void_method_remote_call_pb = new QPushButton(tr("Отправить объект \nmy_data на адаптор,"
+                                                        "\n(remote call void-метода)"));
+  void_method_remote_call_pb->setFixedHeight(80);
+  void_method_remote_call_pb->setPalette(green_color);
+  auto* first_member_le = new QLineEdit();
+  first_member_le->setFixedSize(60, 40);
+  auto* second_member_le = new QLineEdit();
+  second_member_le->setFixedSize(60, 40);
+  auto* third_member_le = new QLineEdit();
+  third_member_le->setFixedSize(60, 40);
+
+  auto* void_method_lyt = new QHBoxLayout();
+  void_method_lyt->addStretch();
+  void_method_lyt->addWidget(first_member_le);
+  void_method_lyt->addWidget(second_member_le);
+  void_method_lyt->addWidget(third_member_le);
+  void_method_lyt->addWidget(void_method_remote_call_pb);
 
   auto* grid = new QGridLayout(this);
   grid->addWidget(header_label,             0, 0,   1, 4, Qt::AlignCenter);
@@ -63,28 +97,56 @@ widget_with_interface::widget_with_interface(QWidget *parent)
 
   grid->addWidget(header_label,             5, 0,   1, 4, Qt::AlignHCenter | Qt::AlignBottom);
   grid->addWidget(output_te_,               6, 0,   8, 4);
-  grid->addWidget(send_by_method_pb,       15, 2,   2, 2);
+  grid->addLayout(void_method_lyt,         15, 1,   2, 3);
+  grid->addLayout(sum_lyt,                 17, 1,   2, 3);
   setLayout(grid);
 
   disconnect_from_dbus();
-  connect(send_by_method_pb, &QPushButton::clicked, [this]() {
-    static int b = 0;
-
+  connect(sum_remote_call_pb, &QPushButton::clicked, [this, first_sum_le, second_sum_le]() {
     if (sum_iface_ == nullptr) {
       return;
     }
 
-    b++;
-    if (b % 2 == 0) {
-      my_data data(2.01, 0.13, 1);
-      sum_iface_->void_method(my_data{2.01, 0.13, 1}, 123.045);
-    } else {
-      QDBusPendingReply<int> reply = sum_iface_->get_sum_method(10, 12);
-      reply.waitForFinished();
-      QString text = reply.isError() ? reply.error().message()
-                                     : "Summa = " + QString::number(reply.value());
-      output_te_->append(text);
+    std::vector<int> values;
+    int ch = 0;
+    for (auto* le : {first_sum_le, second_sum_le}) {
+      bool ok;
+      ++ch;
+      int val = le->text().toInt(&ok);
+      if (ok) {
+        values.push_back(val);
+      } else {
+        output_te_->append("Bad " + QString::number(ch) + "-th arg, check it.");
+        return;
+      }
     }
+    QDBusPendingReply<int> reply = sum_iface_->get_sum_method(values.at(0), values.at(1));
+    reply.waitForFinished();
+    QString text = reply.isError() ? reply.error().message()
+                                   : "Summa = " + QString::number(reply.value());
+    output_te_->append(text);
+  });
+
+  connect(void_method_remote_call_pb, &QPushButton::clicked, [this,
+          first_member_le, second_member_le, third_member_le]() {
+    if (sum_iface_ == nullptr) {
+      return;
+    }
+
+    std::vector<double> values;
+    int ch = 0;
+    for (auto* le : {first_member_le, second_member_le, third_member_le}) {
+      bool ok;
+      ++ch;
+      double val = le->text().toDouble(&ok);
+      if (ok) {
+        values.push_back(val);
+      } else {
+        output_te_->append("Bad " + QString::number(ch) + "-th arg, check it.");
+        return;
+      }
+    }
+    sum_iface_->void_method(my_data{values.at(0), values.at(1), values.at(2)}, 123.045);
   });
 }
 
@@ -97,7 +159,6 @@ widget_with_interface::~widget_with_interface() {
 
 void widget_with_interface::connect_to_dbus() {
   QString path = "tcp:host=" + ip_le_->text() + ",port=" + port_le_->text();
-  qDebug() << path;
 
   auto connection = QDBusConnection::sessionBus();
   // Раскомментировать для работы через remote host:

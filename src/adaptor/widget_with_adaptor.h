@@ -27,7 +27,7 @@ public slots:
   // В отличие от Интерфейса, генерирующего свои слоты по содержимому xml-файла,
   // в классе-клиенте, работающем через Адаптор, их нужно прописывать руками:
   int get_sum_method(int a, int b);
-  void void_method(MyData obj, double a);
+  void void_method(my_data obj, double a);
 
 signals:
   void bool_data_signal(bool);
@@ -36,10 +36,10 @@ signals:
 private:
   void connect_to_dbus();
   void disconnect_from_dbus();
-  void load_settings(QLineEdit& leForIp, QLineEdit& leForPort);
+  void load_settings(QLineEdit& ip_le, QLineEdit& port_le);
 
 private:
-  QLabel*         serv_reg_value_label_;
+  QLabel*         reg_service_label_value_;
   QLineEdit*      ip_le_;
   QLineEdit*      port_le_;
   QPushButton*    connect_pb_;

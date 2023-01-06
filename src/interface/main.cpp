@@ -4,15 +4,12 @@
 #include "../shared/my_data.h"
 
 
-int main(int argc, char *argv[])
-{
-    MyData::registerMetaType();
-//    qRegisterMetaType<MyData>("MyData");
-//    qDBusRegisterMetaType<MyData>();
+int main(int argc, char *argv[]) {
+  register_meta_type<my_data>();
 
-    QApplication a(argc, argv);
-    WidgetWithInterface w;
-    w.show();
+  QApplication a(argc, argv);
+  widget_with_interface w;
+  w.show();
 
-    return a.exec();
+  return a.exec();
 }

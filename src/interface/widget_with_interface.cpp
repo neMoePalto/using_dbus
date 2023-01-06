@@ -12,169 +12,145 @@
 #include "../shared/my_data.h"
 
 
-WidgetWithInterface::WidgetWithInterface(QWidget *parent)
-    : QWidget(parent)
-{
-    QFont mono_12db("Monospace", 12, QFont::DemiBold);
-    QFont mono_14db("Courier 10 Pic", 14, QFont::DemiBold); // TODO: rename
-    _courier = new QFont("Courier", 12, QFont::DemiBold);
-    _arial_12 = new QFont("Arial", 12, QFont::Normal);
-    setFont(*_arial_12);
-    // Поля ввода сетевых настроек:
-    _lb03 = new QLabel(tr("Настройки для соединения с пользовательской шиной Dbus:"));
-//                           "При незаполненных полях инициируется "
-//                           "соединение с локальной\nсессионной шиной."
-    _lbIp = new QLabel(tr("IP-адрес:"));
-    _lbPort = new QLabel(tr("Tcp-порт:"));
-    _lb04 = new QLabel(tr("ID клиента на шине DBus:"));
-    _lbConnName = new QLabel();
-    _leIp = new QLineEdit();
-    _leIp->setFixedWidth(180);
-    _lePort = new QLineEdit();
-    _lePort->setFixedWidth(180);
-    usePreviousSettings(_leIp, _lePort);
+widget_with_interface::widget_with_interface(QWidget *parent)
+  : QWidget(parent) {
+  QFont mono_12_db("Monospace",  12, QFont::DemiBold);
+  QFont mono_14_db("Monospace",  14, QFont::DemiBold);
+  QFont courier_12_db("Courier", 12, QFont::DemiBold);
+  QFont arial_12("Arial",        12, QFont::Normal);
+  setFont(arial_12);
 
-    _pbConnect = new QPushButton();
-    _pbConnect->setFixedSize(180, 70);
-//    QColor colorOrange(210, 120, 34);
-    QColor colorGreen1(110,140,60);
-    _pbConnect->setPalette(colorGreen1);
-    // Прочие поля:
-    _teOutput = new QTextEdit();
-    _teOutput->setFont(*_courier);
-    _teOutput->setMinimumSize(220, 350);
-    _lb01 = new QLabel(tr("Интерфейс Dbus (как бы клиент)"));
-    _lb01->setFont(mono_14db);
-    _lb02 = new QLabel(tr("Логи подключения + данные, полученные от adaptorApp"));
-    _lb02->setFixedHeight(35);
-    _pbSendByMethod = new QPushButton(tr("Отправить данные,\nиспользуя метод <method>"));
-    _pbSendByMethod->setFixedHeight(80);
-    _pbSendByMethod->setPalette(colorGreen1);
+  auto* settings_label = new QLabel(tr("Настройки для соединения с пользовательской шиной Dbus:"));
+  // TODO: Добавить комбобокс Шина: локальная или удаленная (настр. нужны только для нее)
+  // "При незаполненных полях устанавливается соединение с локальной\nсессионной шиной."
+  auto* ip_label   = new QLabel(tr("IP-адрес:"));
+  auto* port_label = new QLabel(tr("Tcp-порт:"));
+  auto* id_on_dbus_label = new QLabel(tr("ID клиента на шине DBus:"));
+  id_on_dbus_label_value_ = new QLabel();
+  ip_le_ = new QLineEdit();
+  ip_le_->setFixedWidth(180);
+  port_le_ = new QLineEdit();
+  port_le_->setFixedWidth(180);
+  load_settings(*ip_le_, *port_le_);
 
-    _grid = new QGridLayout(this);
-    _grid->addWidget(_lb01,     0, 0,   1, 4, Qt::AlignCenter);
-    _grid->addWidget(_lb03,     1, 0,   1, 4, Qt::AlignHCenter);
-    _grid->addWidget(_lbIp,     2, 0,   1, 1, Qt::AlignRight);
-    _grid->addWidget(_leIp,     2, 1,   1, 1);
-    _grid->addWidget(_pbConnect,   2, 2,   2, 2, Qt::AlignRight);
-    _grid->addWidget(_lbPort,      3, 0,   1, 1, Qt::AlignRight);
-    _grid->addWidget(_lePort,      3, 1,   1, 1);
-    _grid->addWidget(_lb04,        4, 0,   1, 1, Qt::AlignRight | Qt::AlignTop);
-    _grid->addWidget(_lbConnName,  4, 1,   1, 1, Qt::AlignTop);
+  connect_pb_ = new QPushButton();
+  connect_pb_->setFixedSize(180, 70);
+  QColor green_color{110, 140, 60};
+  connect_pb_->setPalette(green_color);
 
-    _grid->addWidget(_lb02,     5, 0,   1, 4, Qt::AlignHCenter | Qt::AlignBottom);
-    _grid->addWidget(_teOutput, 6, 0,   8, 4);
-    _grid->addWidget(_pbSendByMethod,  15, 2, 2, 2);
-    setLayout(_grid);
+  output_te_ = new QTextEdit();
+  output_te_->setFont(courier_12_db);
+  output_te_->setMinimumSize(220, 350);
+  auto* header_label = new QLabel(tr("Интерфейс Dbus (как бы клиент)"));
+  header_label->setFont(mono_14_db);
+  auto* output_label = new QLabel(tr("Логи подключения + данные, полученные от adaptor"));
+  output_label->setFixedHeight(35);
 
-    disconnectFromDBus();
-    connect(_pbSendByMethod, SIGNAL(clicked()),  this, SLOT(useMethod()) );
-}
+  auto* send_by_method_pb = new QPushButton(tr("Отправить данные,\nиспользуя метод <method>"));
+  send_by_method_pb->setFixedHeight(80);
+  send_by_method_pb->setPalette(green_color);
 
-WidgetWithInterface::~WidgetWithInterface()
-{
-    _settings->setValue("IP", _leIp->text());
-    _settings->setValue("port", _lePort->text());
-    delete _settings;
-}
+  auto* grid = new QGridLayout(this);
+  grid->addWidget(header_label,             0, 0,   1, 4, Qt::AlignCenter);
+  grid->addWidget(settings_label,           1, 0,   1, 4, Qt::AlignHCenter);
+  grid->addWidget(ip_label,                 2, 0,   1, 1, Qt::AlignRight);
+  grid->addWidget(ip_le_,                   2, 1,   1, 1);
+  grid->addWidget(connect_pb_,              2, 2,   2, 2, Qt::AlignRight);
+  grid->addWidget(port_label,               3, 0,   1, 1, Qt::AlignRight);
+  grid->addWidget(port_le_,                 3, 1,   1, 1);
+  grid->addWidget(id_on_dbus_label,         4, 0,   1, 1, Qt::AlignRight | Qt::AlignTop);
+  grid->addWidget(id_on_dbus_label_value_,  4, 1,   1, 1, Qt::AlignTop);
 
+  grid->addWidget(header_label,             5, 0,   1, 4, Qt::AlignHCenter | Qt::AlignBottom);
+  grid->addWidget(output_te_,               6, 0,   8, 4);
+  grid->addWidget(send_by_method_pb,       15, 2,   2, 2);
+  setLayout(grid);
 
-void WidgetWithInterface::useMethod()
-{
-    if (_sum == nullptr)
-        return;
+  disconnect_from_dbus();
+  connect(send_by_method_pb, &QPushButton::clicked, [this]() {
     static int b = 0;
+
+    if (sum_iface_ == nullptr) {
+      return;
+    }
+
     b++;
-    if (b%2 == 0)
-        _sum->methodVoid(10, 12);
-    else
-    {
-        MyData data(2.01, 0.13, 1);
-        QDBusPendingReply<double> reply = _sum->methodWithReturnValue(data, 2002);
-        reply.waitForFinished();
-        if (reply.isError())
-            _teOutput->append(reply.error().message());
-        else
-            _teOutput->append("Summa = " + QString::number(reply.value()) );
+    if (b % 2 == 0) {
+      my_data data(2.01, 0.13, 1);
+      sum_iface_->void_method(my_data{2.01, 0.13, 1}, 123.045);
+    } else {
+      QDBusPendingReply<int> reply = sum_iface_->get_sum_method(10, 12);
+      reply.waitForFinished();
+      QString text = reply.isError() ? reply.error().message()
+                                     : "Summa = " + QString::number(reply.value());
+      output_te_->append(text);
     }
+  });
 }
 
-void WidgetWithInterface::usePreviousSettings(
-        QLineEdit *leForIp, QLineEdit *leForPort)
-{
-    _settings = new QSettings("../config/interfaceApp.ini", QSettings::IniFormat);
-    QString ip = _settings->value("IP").toString();
-    leForIp->setText(ip);
-    QString port = _settings->value("port").toString();
-    leForPort->setText(port);
+
+widget_with_interface::~widget_with_interface() {
+  settings_->setValue("IP", ip_le_->text());
+  settings_->setValue("port", port_le_->text());
 }
 
-//void WidgetWithInterface::timerEvent(QTimerEvent *event)
-//{}
 
-void WidgetWithInterface::slotForFirst(bool val)
-{
-    if (val == true)
-        _teOutput->append("true");
-    else
-        _teOutput->append("false");
+void widget_with_interface::connect_to_dbus() {
+  QString path = "tcp:host=" + ip_le_->text() + ",port=" + port_le_->text();
+  qDebug() << path;
+
+  auto connection = QDBusConnection::sessionBus();
+  // Раскомментировать для работы через remote host:
+  //    auto connection = QDBusConnection::connectToBus(path, _connName);
+
+  if (connection.isConnected()) {
+    output_te_->append("Connection to DBus with " + ip_le_->text() + ":" + port_le_->text());
+    output_te_->append("Success connection.");
+    // При конструировании Интерфейса необходимо задать переменную path.
+    // Значение переменной path должно совпадать со значением, указанным
+    // на стороне Адаптора.
+    sum_iface_ = std::make_unique<org::rumba::Sum>(org::rumba::Sum::staticInterfaceName(),
+                                                   object_path_, // "/Sum"
+                                                   connection,
+                                                   this);
+    id_on_dbus_label_value_->setText("\"" + sum_iface_->connection().baseService() + "\"");
+    connect(sum_iface_.get(), &OrgRumbaSumInterface::bool_data_signal, [this](bool val) {
+      output_te_->append(val ? "true" : "false");
+    });
+
+    connect_pb_->setText(tr("Отсоединиться\nот DBus"));
+    disconnect(connect_pb_, &QPushButton::clicked, this, &widget_with_interface::connect_to_dbus);
+    connect   (connect_pb_, &QPushButton::clicked, this, &widget_with_interface::disconnect_from_dbus);
+  } else {
+    output_te_->append("Connection failed!");
+    QDBusConnection::disconnectFromBus(connect_name_);
+  }
 }
 
-void WidgetWithInterface::connectToDBus()
-{
-    QString path = "tcp:host=" + _leIp->text() + ",port=" + _lePort->text();
-    qDebug() << path;
 
-    auto connection = QDBusConnection::sessionBus();
+void widget_with_interface::disconnect_from_dbus() {
+  static bool is_first_call{true};
+
+  if (is_first_call == true) {
+    is_first_call = false;
+  } else {
+    sum_iface_.reset(nullptr);
+    //    QDBusConnection::disconnectFromBus(QDBusConnection::sessionBus().name());
     // Раскомментировать для работы через remote host:
-//    auto connection = QDBusConnection::connectToBus(path, _connName);
+    QDBusConnection::disconnectFromBus(connect_name_);
+    output_te_->append("Disconnected from DBus.");
+    id_on_dbus_label_value_->clear();
+  }
 
-    if (connection.isConnected())
-    {
-        _teOutput->append("Connection to DBus with " + _leIp->text() + ":" + _lePort->text());
-        _teOutput->append("Success connection.");
-        // При конструировании Интерфейса необходимо задать переменную path.
-        // Значение переменной path должно совпадать со значением, указанным
-        // на стороне Адаптора.
-        _sum = std::make_unique<org::rumba::Sum>(org::rumba::Sum::staticInterfaceName()
-                                   , _objectPath //"/Sum"
-                                   , connection
-                                   , this);
-
-//        qDebug() << _sum->connection().baseService();
-        _lbConnName->setText("\"" + _sum->connection().baseService() + "\"");
-        connect(_sum.get(), SIGNAL(signalFirst(bool)), this, SLOT(slotForFirst(bool)) );
-
-        _pbConnect->setText(tr("Отсоединиться\nот DBus"));
-        disconnect(_pbConnect, SIGNAL(clicked()),   this, SLOT(connectToDBus()) );
-        connect(_pbConnect, SIGNAL(clicked()),   this, SLOT(disconnectFromDBus()) );
-//        this->startTimer(1000);
-    }
-    else
-    {
-        _teOutput->append("Connection failed!");
-        QDBusConnection::disconnectFromBus(_connName);
-    }
-}
-
-void WidgetWithInterface::disconnectFromDBus()
-{
-    static bool isFirstCall{true};
-    if (isFirstCall == true)
-        isFirstCall = false;
-    else
-    {
-        _sum.reset(nullptr);
-        //    QDBusConnection::disconnectFromBus(QDBusConnection::sessionBus().name());
-        // Раскомментировать для работы через remote host:
-        QDBusConnection::disconnectFromBus(_connName);
-        _teOutput->append("Disconnected from DBus.");
-        _lbConnName->clear();
-    }
-
-    disconnect(_pbConnect, SIGNAL(clicked()),   this, SLOT(disconnectFromDBus()) );
-    connect(_pbConnect, SIGNAL(clicked()),   this, SLOT(connectToDBus()) );
-    _pbConnect->setText(tr("Подключиться\nк DBus"));
+  disconnect(connect_pb_, &QPushButton::clicked, this, &widget_with_interface::disconnect_from_dbus);
+  connect   (connect_pb_, &QPushButton::clicked, this, &widget_with_interface::connect_to_dbus);
+  connect_pb_->setText(tr("Подключиться\nк DBus"));
 }
 
 
+void widget_with_interface::load_settings(QLineEdit& ip_le, QLineEdit& port_le) {
+  settings_ = std::make_unique<QSettings>("../config/interface.ini", QSettings::IniFormat);
+
+  ip_le.setText(settings_->value("IP").toString());
+  port_le.setText(settings_->value("port").toString());
+}

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QSettings>
+#include <QString>
 #include <QWidget>
 
 #include <memory>
@@ -9,48 +11,33 @@
 
 class QLabel;
 class QLineEdit;
-class QTextEdit;
-class QGridLayout;
 class QPushButton;
-class WidgetWithInterface : public QWidget
-{
-    Q_OBJECT
+class QTextEdit;
+
+class widget_with_interface : public QWidget {
+  Q_OBJECT
+
 public:
-    WidgetWithInterface(QWidget *parent = nullptr);
-    ~WidgetWithInterface();
-//protected:
-//    void timerEvent(QTimerEvent *event) override;
-public slots:
-    void slotForFirst(bool val);
-private slots:
-    void useMethod();
-    void connectToDBus();
-    void disconnectFromDBus();
+  widget_with_interface(QWidget *parent = nullptr);
+  ~widget_with_interface();
+
 private:
-    // Интерфейс DBus, используется для отправки сообщений:
-    std::unique_ptr<org::rumba::Sum> _sum;
+  void connect_to_dbus();
+  void disconnect_from_dbus();
+  void load_settings(QLineEdit& ip_le, QLineEdit& port_le);
 
-    QGridLayout*    _grid;
-    QTextEdit*      _teOutput;
-    QPushButton*    _pbSendByMethod;
-    QLabel* _lb01;
-    QLabel* _lb02;
-    // Поля для ввода сетевых настроек:
-    QLabel* _lb03;
-    QLabel* _lb04;
-    QLabel* _lbConnName;
+private:
+  // Интерфейс DBus, используется для отправки сообщений:
+  std::unique_ptr<org::rumba::Sum> sum_iface_;
 
-    QLabel* _lbIp;
-    QLabel* _lbPort;
-    QLineEdit*      _leIp;
-    QLineEdit*      _lePort;
-    QPushButton*    _pbConnect;
+  QLabel*       id_on_dbus_label_value_;
+  QLineEdit*    ip_le_;
+  QLineEdit*    port_le_;
+  QPushButton*  connect_pb_;
+  QTextEdit*    output_te_;
 
-    const QString _connName{"myConnection"};
-    const QString _objectPath{"/"};
-    QFont*  _courier;
-    QFont*  _arial_12;
+  const QString connect_name_{"sample_connect_name"};
+  const QString object_path_{"/"};
 
-    QSettings* _settings;
-    void usePreviousSettings(QLineEdit* leForIp, QLineEdit* leForPort);
+  std::unique_ptr<QSettings> settings_;
 };

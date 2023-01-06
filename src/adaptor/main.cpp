@@ -5,7 +5,7 @@
 
 
 int main(int argc, char* argv[]) {
-  MyData::registerMetaType();
+  register_meta_type<my_data>();
 
   QApplication a(argc, argv);
   widget_with_adaptor w;

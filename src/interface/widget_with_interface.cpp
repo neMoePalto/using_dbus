@@ -23,7 +23,7 @@ widget_with_interface::widget_with_interface(QWidget *parent)
   QFont arial_12("Arial",        12, QFont::Normal);
   setFont(arial_12);
 
-  auto* settings_label = new QLabel(tr("Настройки для соединения с пользовательской шиной Dbus:"));
+  auto* settings_label = new QLabel(tr("Настройки для соединения с пользовательской шиной DBus:"));
   // TODO: Добавить комбобокс Шина: локальная или удаленная (настр. нужны только для нее)
   // "При незаполненных полях устанавливается соединение с локальной\nсессионной шиной."
   auto* ip_label   = new QLabel(tr("IP-адрес:"));
@@ -44,7 +44,7 @@ widget_with_interface::widget_with_interface(QWidget *parent)
   output_te_ = new QTextEdit();
   output_te_->setFont(courier_12_db);
   output_te_->setMinimumSize(220, 350);
-  auto* header_label = new QLabel(tr("Интерфейс Dbus (как бы клиент)"));
+  auto* header_label = new QLabel(tr("Интерфейс DBus (как бы клиент)"));
   header_label->setFont(mono_14_db);
   auto* output_label = new QLabel(tr("Логи подключения + данные, полученные от adaptor"));
   output_label->setFixedHeight(35);

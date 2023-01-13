@@ -10,12 +10,13 @@
 #include "../shared/my_data.h"
 
 
+class QComboBox;
 class QLabel;
 class QLineEdit;
 class QPushButton;
 class QTextEdit;
 
-// Класс-клиент, использующий адаптор Dbus (Адаптор)
+// Класс-клиент, использующий адаптор DBus (Адаптор)
 class widget_with_adaptor : public QWidget {
   Q_OBJECT
 
@@ -39,16 +40,21 @@ private:
   void load_settings(QLineEdit& ip_le, QLineEdit& port_le);
 
 private:
-  QLabel*         reg_service_label_value_;
-  QLineEdit*      ip_le_;
-  QLineEdit*      port_le_;
-  QPushButton*    connect_pb_;
-  QTextEdit*      output_te_;
+  QComboBox*       dbus_type_cb_;
+  QPushButton*     connect_pb_;
+  const std::pair<QString, QString> connect_pb_names_;
+  QLabel*          reg_service_label_value_;
+  QLineEdit*       ip_le_;
+  QLineEdit*       port_le_;
+  QTextEdit*       output_te_;
 
-  const QString   connect_name_{"sample_connect_name"};
-  const QString   service_name_{"org.rumba.Sum"};
-  const QString   object_path_{"/"};
-  QDBusConnection connection_{""};
+//  QString    connect_name_;//{"sample_connect_name"}; // TODO: Проверить необходимость для remote-шины
+  const QString    service_name_{"org.rumba.Sum"};
+  const QString    object_path_{"/"};
+  QDBusConnection* current_conn_ = nullptr;
+  QDBusConnection  session_conn_{""};
+  QDBusConnection  remote_conn_{""};
+  QString          prev_remote_conn_settings_;
 
   std::unique_ptr<QSettings> settings_;
 };

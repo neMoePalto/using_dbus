@@ -4,6 +4,8 @@ set(sources
   main.cpp
   widget_with_adaptor.cpp
   widget_with_adaptor.h
+  ../shared/connector_widget.cpp
+  ../shared/connector_widget.h
   ../shared/my_data.cpp
   ../shared/my_data.h
 )

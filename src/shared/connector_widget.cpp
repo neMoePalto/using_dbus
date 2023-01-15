@@ -17,10 +17,10 @@ connector_widget::connector_widget(QWidget *parent)
   dbus_type_cb_->addItem(tr("Remote (user launched)"));
   dbus_type_cb_->setFixedWidth(250);
 
-  reg_service_label_ = new QLabel();
-  reg_service_label_->setMinimumHeight(20);
-  reg_service_label_value_ = new QLabel();
-  reg_service_label_value_->setMinimumHeight(20);
+  dbus_registration_label_ = new QLabel();
+  dbus_registration_label_->setMinimumHeight(20);
+  dbus_registration_label_value_ = new QLabel();
+  dbus_registration_label_value_->setMinimumHeight(20);
 
   connect_pb_ = new QPushButton(this);
   connect_pb_->setCheckable(true);
@@ -46,8 +46,8 @@ connector_widget::connector_widget(QWidget *parent)
 
   auto* reg_service_lyt = new QVBoxLayout();
   reg_service_lyt->insertSpacing(0, 15);
-  reg_service_lyt->addWidget(reg_service_label_,       Qt::AlignLeft);
-  reg_service_lyt->addWidget(reg_service_label_value_, Qt::AlignLeft);
+  reg_service_lyt->addWidget(dbus_registration_label_,       Qt::AlignLeft);
+  reg_service_lyt->addWidget(dbus_registration_label_value_, Qt::AlignLeft);
   reg_service_lyt->insertSpacing(3, 15);
 
   auto* grid = new QGridLayout(this);
@@ -56,6 +56,7 @@ connector_widget::connector_widget(QWidget *parent)
   grid->addWidget(settings_w_,         2, 0,   2, 2, Qt::AlignLeft);
   grid->addLayout(reg_service_lyt,     2, 3,   2, 2, Qt::AlignRight);
   grid->addWidget(connect_pb_,         0, 3,   2, 2, Qt::AlignRight);
+  setLayout(grid);
 }
 
 

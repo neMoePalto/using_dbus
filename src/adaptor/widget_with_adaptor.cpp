@@ -28,7 +28,7 @@ widget_with_adaptor::widget_with_adaptor(QWidget *parent)
   w_ = new connector_widget(this);
   QColor orange_color(210, 120, 34);
   w_->connect_pb_->setPalette(orange_color);
-  w_->reg_service_label_->setText("Зарегистрирован сервис:");
+  w_->dbus_registration_label_->setText("Зарегистрирован сервис:");
   //------------------------------------------------
 
   auto* output_label = new QLabel(tr("Логи подключения и данные, полученные от интерфейсов"));
@@ -37,9 +37,8 @@ widget_with_adaptor::widget_with_adaptor(QWidget *parent)
   output_te_->setFont(courier_12_db);
   output_te_->setMinimumSize(220, 350);
 
-  auto* send_by_signal_pb = new QPushButton(
-                               tr("Отправить данные в адрес всех\nподключенных"
-                                  " к сервису клиентов,\nиспользуя сигнал <signal>"), this);
+  auto* send_by_signal_pb = new QPushButton(tr("Отправить данные в адрес всех\nподключенных"
+                                               " к сервису клиентов,\nиспользуя сигнал <signal>"), this);
   send_by_signal_pb->setFixedHeight(80);
   send_by_signal_pb->setPalette(orange_color);
   //------------------------------------------------
@@ -109,7 +108,7 @@ void widget_with_adaptor::connect_to_dbus() {
     // Имя сервиса должно совпадать с именем интерфейса, который описан в xml-файле
     if (current_conn_->registerService(service_name_)) {
       output_te_->append("  Service registered");
-      w_->reg_service_label_value_->setText(service_name_);
+      w_->dbus_registration_label_value_->setText(service_name_);
     } else {
       output_te_->append("  Error: Can't register service " + service_name_ +
                          ".\nMay be, this name was already registered.");
@@ -147,7 +146,7 @@ void widget_with_adaptor::disconnect_from_dbus() {
 //    QDBusConnection::disconnectFromBus(connect_name_); - no effect
     if (current_conn_->unregisterService(service_name_)) {
       output_te_->append("  Disconnected (service unregistered)");
-      w_->reg_service_label_value_->clear();
+      w_->dbus_registration_label_value_->clear();
     } else {
 //      output_te_->append("Error! Can't unregister service.");
     }
